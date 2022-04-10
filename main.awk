@@ -11,7 +11,6 @@
 @include "./lib/urllib_parse.awk";
 
 BEGIN {
-    RS = ORS = "\r\n";
     Port = "8080";
     Dir = ".";
     serve_forever(Port, Dir);
