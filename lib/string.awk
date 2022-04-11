@@ -3,6 +3,10 @@
 @include "./lib/array.awk";
 @include "./lib/shlex.awk";
 
+BEGIN {
+    GLOBAL["PRINTF_COMMAND"] = "printf";
+}
+
 func startswith(str, prefix, start, end, __ARGV_END__, plen, slen, i, teststr) {
     if (awk::isarray(prefix)) {
         for (i in prefix) {
@@ -238,8 +242,8 @@ func Split(str, result, sep, maxsplit, __ARGV_END__, start, end, i, match_group,
 
 func bytes(str, bs_array, __ARGV_END__, save_rs, fmt, cmd, od_line, od_array, i, h) {
     array::new(bs_array);
-    fmt = "printf '%%s' %s | od -t x1";
-    cmd = sprintf(fmt, shlex::quote(str));
+    fmt = "%s '%%s' %s | od -t x1";
+    cmd = sprintf(fmt, shlex::quote(GLOBAL["PRINTF_COMMAND"]), shlex::quote(str));
     save_rs = RS;
     RS = "\n";
     while ((cmd | getline od_line) > 0) {
@@ -254,4 +258,16 @@ func bytes(str, bs_array, __ARGV_END__, save_rs, fmt, cmd, od_line, od_array, i,
     }
     close(cmd);
     RS = save_rs;
+}
+
+func escape(str, __ARGV_END__, fmt, cmd, result) {
+    fmt = "%s '%%b' %s";
+    cmd = sprintf(fmt, shlex::quote(GLOBAL["PRINTF_COMMAND"]), shlex::quote(str));
+    save_rs = RS;
+    RS = "^$";
+    cmd | getline result;
+    close(cmd);
+    RS = save_rs;
+
+    return result;
 }

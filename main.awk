@@ -11,8 +11,12 @@
 @include "./lib/urllib_parse.awk";
 
 BEGIN {
-    Port = "8080";
-    Dir = ".";
+    if (length(Port) == 0) {
+        Port = "8080";
+    }
+    if (length(Dir) == 0) {
+        Dir = ".";
+    }
     serve_forever(Port, Dir);
 }
 
@@ -45,7 +49,7 @@ func send_head(store,
                __ARGV_END__, path, parts, new_url, index_files, ii, has_index_file,
                ctype, ret, sdata, content) {
     path = translate_path(store["path"], store["directory"]);
-    if (posixpath::isdir(path)) {
+    if (posixpath::isdir(path) == 1) {
         urllib_parse::urlsplit(path, parts);
         if (!string::endswith(parts[3], "/")) {
             http_server::send_response(store, store["HTTPStatus"]["MOVED_PERMANENTLY"]);
@@ -118,11 +122,11 @@ func list_directory(store, path,
         fullname = posixpath::join(path, name);
         linkname = name;
         displayname = name;
-        if (posixpath::isdir(fullname)) {
+        if (posixpath::isdir(fullname) == 1) {
             displayname = string::concat(name, "/");
             linkname = string::concat(name, "/");
         }
-        if (posixpath::islink(fullname)) {
+        if (posixpath::islink(fullname) == 1) {
             displayname = string::concat(name, "@");
         }
         array::push(r, sprintf("<li><a href=\"%s\">%s</a></li>", urllib_parse::quote(linkname), html::escape(displayname, 0)));

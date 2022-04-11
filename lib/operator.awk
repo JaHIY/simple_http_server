@@ -10,3 +10,17 @@ func is_ascii(s) {
     }
     return 1;
 }
+
+func identity(s) {
+    return s;
+}
+
+func compare(a, b) {
+    if (a > b) {
+        return 1;
+    }
+    if (a < b) {
+        return -1;
+    }
+    return 0;
+}

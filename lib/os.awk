@@ -2,22 +2,17 @@
 
 @include "./lib/array.awk";
 @include "./lib/shlex.awk";
+@include "./lib/string.awk";
 
-func listdir(path, filelist, __ARGV__, save_rs, cmd_array, cmd, quiet_cmd, result) {
+BEGIN {
+    GLOBAL["FIND_COMMAND"] = "find";
+}
+
+func listdir(path, filelist, __ARGV__, save_rs, fmt, cmd, quiet_cmd, result) {
     array::new(filelist);
-    array::new(cmd_array);
-    array::push(cmd_array, "find");
-    array::push(cmd_array, path);
-    array::push(cmd_array, "-maxdepth");
-    array::push(cmd_array, "1");
-    array::push(cmd_array, "-print0");
-    cmd = shlex::join(cmd_array);
-
-    array::new(cmd_array);
-    array::push(cmd_array, cmd);
-    array::push(cmd_array, "> /dev/null");
-    array::push(cmd_array, "2> /dev/null");
-    quiet_cmd = array::join(cmd_array, " ");
+    fmt = "%s %s -maxdepth 1 -print0";
+    cmd = sprintf(fmt, shlex::quote(GLOBAL["FIND_COMMAND"]), shlex::quote(path));
+    quiet_cmd = string::concat(cmd, " > /dev/null 2> /dev/null");
 
     if (system(quiet_cmd)) {
         return 0;
@@ -34,6 +29,7 @@ func listdir(path, filelist, __ARGV__, save_rs, cmd_array, cmd, quiet_cmd, resul
         array::push(filelist, result);
     }
     close(cmd);
+    array::sortd(filelist, "tolower");
 
     RS = save_rs;
     return 1;

@@ -37,15 +37,7 @@ func re_split(str, arr, sep, __ARGV_END__, a, seps, i, len) {
 
 func _unquote(str, __ARGV_END__, fmt, cmd, save_rs, result) {
     str = awk::gensub(/%([[:xdigit:]]{2})/, "\\\\x\\1", "g", str);
-    fmt = "printf '%%b\\n' %s";
-    cmd = sprintf(fmt, shlex::quote(str));
-    save_rs = RS;
-    RS = "^$";
-    cmd | getline result;
-    close(cmd);
-    RS = save_rs;
-
-    return result;
+    return string::escape(str);
 }
 
 func _unsafe_url_bytes_to_remove(arr, __ARGV_END__, chars) {

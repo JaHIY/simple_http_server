@@ -1,5 +1,7 @@
 @namespace "array";
 
+@include "./lib/operator.awk";
+
 func push(arr, value) {
     arr[length(arr) + 1] = value;
 }
@@ -128,5 +130,47 @@ func union(arr1, arr2, new_arr, __ARGV_END__, dict, i, item) {
     if (in_place) {
         copy(new_arr, arr1);
     }
+}
 
+func swap(arr, i, j, __ARGV_END__, t) {
+    t = arr[i];
+    arr[i] = arr[j];
+    arr[j] = t;
+}
+
+func qsort(arr, left, right, key, reverse, __ARGV_END__, r, last, i, arr_i, arr_left) {
+    if (left >= right) {
+        return;
+    }
+
+    r = 1;
+    if (reverse == 1) {
+        r = -1;
+    }
+    if (length(key) == 0) {
+        key = "operator::identity";
+    }
+
+    swap(arr, left, int((left + right) / 2));
+    last = left;
+    for (i = left + 1; i <= right; i++) {
+        arr_i = @key(arr[i]);
+        arr_left = @key(arr[left]);
+        if (operator::compare(arr_i, arr_left) * r < 0) {
+            last += 1;
+            swap(arr, last, i);
+        }
+    }
+    swap(arr, left, last);
+    qsort(arr, left, last - 1, key, reverse);
+    qsort(arr, last + 1, right, key, reverse);
+}
+
+func sortd(arr, key, reverse) {
+    qsort(arr, 1, length(arr), key, reverse);
+}
+
+func sort(arr, new_arr, key, reverse) {
+    copy(arr, new_arr);
+    qsort(new_arr, 1, length(new_arr), key, reverse);
 }

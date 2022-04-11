@@ -183,7 +183,7 @@ func handle_one_request(store, __ARGV_END__, save_rs, ret, method) {
         }
 
         method = mname(store["command"]);
-        if (!(method in PROCINFO["identifiers"])) {
+        if (!(method in PROCINFO["identifiers"]) || PROCINFO["identifiers"][method] != "user") {
             send_error(store, store["HTTPStatus"]["NOT_IMPLEMENTED"], sprintf("Unsupported method (%s)", store["command"]));
             return;
         }

@@ -83,8 +83,8 @@ func join(a, p, __ARGV_END__, sep, path) {
 func isdir(path, __ARGV_END__, ret, stat_data) {
     ret = awk::stat(path, stat_data);
     if (ret < 0) {
-        printf("isdir: could not stat '%s`: %s\n", path, ERRNO) > "/dev/stderr";
-        exit(1);
+        #printf("isdir: could not stat '%s`: %s\n", path, ERRNO) > "/dev/stderr";
+        return ret;
     }
     return (stat_data["type"] == "directory");
 }
@@ -92,8 +92,8 @@ func isdir(path, __ARGV_END__, ret, stat_data) {
 func islink(path, __ARGV_END__, ret, stat_data) {
     ret = awk::stat(path, stat_data);
     if (ret < 0) {
-        printf("islink: could not stat '%s`: %s\n", path, ERRNO) > "/dev/stderr";
-        exit(1);
+        #printf("islink: could not stat '%s`: %s\n", path, ERRNO) > "/dev/stderr";
+        return ret;
     }
     return (stat_data["type"] == "symlink");
 }
