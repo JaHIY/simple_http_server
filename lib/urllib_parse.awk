@@ -35,7 +35,7 @@ func re_split(str, arr, sep, __ARGV_END__, a, seps, i, len) {
     array::push(arr, a[i]);
 }
 
-func _unquote(str, __ARGV_END__, fmt, cmd, save_rs, result) {
+func _unquote(str) {
     str = awk::gensub(/%([[:xdigit:]]{2})/, "\\\\x\\1", "g", str);
     return string::escape(str);
 }

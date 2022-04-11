@@ -242,7 +242,7 @@ func Split(str, result, sep, maxsplit, __ARGV_END__, start, end, i, match_group,
 
 func bytes(str, bs_array, __ARGV_END__, save_rs, fmt, cmd, od_line, od_array, i, h) {
     array::new(bs_array);
-    fmt = "%s '%%s' %s | od -t x1";
+    fmt = "%s '%%s' %s | od -An -t x1";
     cmd = sprintf(fmt, shlex::quote(GLOBAL["PRINTF_COMMAND"]), shlex::quote(str));
     save_rs = RS;
     RS = "\n";
