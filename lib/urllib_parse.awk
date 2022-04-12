@@ -22,16 +22,11 @@ func unquote(str, __ARGV_END__, bits, res, i, len) {
     return array::join(res, "");
 }
 
-func re_split(str, arr, sep, __ARGV_END__, a, seps, i, len) {
+func re_split(str, arr, sep, __ARGV_END__, a, seps) {
     array::new(arr);
 
     split(str, a, sep, seps);
-    len = length(seps);
-    for (i = 1; i <= len; i += 1) {
-        array::push(arr, a[i]);
-        array::push(arr, seps[i]);
-    }
-    array::push(arr, a[i]);
+    array::zip_longest(a, seps, arr);
 }
 
 func _unquote(str) {

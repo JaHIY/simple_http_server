@@ -128,7 +128,7 @@ func map(arr, fun, new_arr, __ARGV_END__, in_place, i) {
     }
 }
 
-func union(arr1, arr2, new_arr, __ARGV_END__, dict, i, item) {
+func union(arr1, arr2, new_arr, __ARGV_END__, dict, i, item, in_place) {
     if (awk::isarray(new_arr)) {
         in_place = 0;
     } else {
@@ -257,4 +257,51 @@ func none(arr, fun) {
         push(f, fun);
     }
     return all(arr, f);
+}
+
+func zip(arr1, arr2, new_arr, __ARGV_END__, len, i, in_place) {
+    if (awk::isarray(new_arr)) {
+        in_place = 0;
+    } else {
+        in_place = 1;
+    }
+
+    new(new_arr);
+
+    len = operator::min(length(arr1), length(arr2));
+    for (i = 1; i <= len; i += 1) {
+        push(new_arr, arr1[i]);
+        push(new_arr, arr2[i]);
+    }
+
+    if (in_place) {
+        copy(new_arr, arr1);
+    }
+}
+
+func zip_longest(arr1, arr2, new_arr, __ARGV_END__, len1, len2, minlen, i, in_place) {
+    if (awk::isarray(new_arr)) {
+        in_place = 0;
+    } else {
+        in_place = 1;
+    }
+
+    new(new_arr);
+    zip(arr1, arr2, new_arr);
+    len1 = length(arr1);
+    len2 = length(arr2);
+    minlen = operator::min(len1, len2);
+    if (len1 > len2) {
+        for (i = minlen + 1; i <= len1; i += 1) {
+            push(new_arr, arr1[i]);
+        }
+    } else {
+        for (i = minlen + 1; i <= len2; i += 1) {
+            push(new_arr, arr2[i]);
+        }
+    }
+
+    if (in_place) {
+        copy(new_arr, arr1);
+    }
 }
