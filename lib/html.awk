@@ -1,6 +1,6 @@
 @namespace "html";
 
-func escape(str, quote_flag) {
+function escape(str, quote_flag) {
     gsub("&", "&amp;", str);
     gsub("<", "&lt;", str);
     gsub(">", "&gt;", str);

@@ -7,7 +7,7 @@ BEGIN {
     GLOBAL["PRINTF_COMMAND"] = "printf";
 }
 
-func startswith(str, prefix, start, end, __ARGV_END__, plen, slen, i, teststr) {
+function startswith(str, prefix, start, end, __ARGV_END__, plen, slen, i, teststr) {
     if (awk::isarray(prefix)) {
         for (i in prefix) {
             if (startswith(str, prefix[i], start, end)) {
@@ -51,7 +51,7 @@ func startswith(str, prefix, start, end, __ARGV_END__, plen, slen, i, teststr) {
     return (substr(teststr, 1, plen) == prefix);
 }
 
-func endswith(str, prefix, start, end, __ARGV_END__, plen, slen, i, teststr) {
+function endswith(str, prefix, start, end, __ARGV_END__, plen, slen, i, teststr) {
     if (awk::isarray(prefix)) {
         for (i in prefix) {
             if (endswith(str, prefix[i], start, end)) {
@@ -95,7 +95,7 @@ func endswith(str, prefix, start, end, __ARGV_END__, plen, slen, i, teststr) {
     return (substr(teststr, length(teststr) - plen + 1, plen) == prefix);
 }
 
-func at(str, i, __ARGV_END__, slen) {
+function at(str, i, __ARGV_END__, slen) {
     slen = length(str);
     if (i < 1) {
         i = slen - i;
@@ -107,7 +107,7 @@ func at(str, i, __ARGV_END__, slen) {
     return substr(str, i, 1);
 }
 
-func repeat(str, times, __ARGV_END__, i, result) {
+function repeat(str, times, __ARGV_END__, i, result) {
     if (awk::typeof(times) != "number") {
         printf("%s\n", "repeat: second argument is not number") > "/dev/stderr";
         exit(1);
@@ -123,7 +123,7 @@ func repeat(str, times, __ARGV_END__, i, result) {
     return result;
 }
 
-func find(str, target, start, end, __ARGV__, slen) {
+function find(str, target, start, end, __ARGV__, slen) {
     slen = length(str);
     if (length(start) == 0) {
         start = 1;
@@ -153,7 +153,7 @@ func find(str, target, start, end, __ARGV__, slen) {
     return index(str, target);
 }
 
-func rfind(str, target, start, end, __ARGV_END__, slen, pos) {
+function rfind(str, target, start, end, __ARGV_END__, slen, pos) {
     slen = length(str);
     if (length(start) == 0) {
         start = 1;
@@ -188,7 +188,7 @@ func rfind(str, target, start, end, __ARGV_END__, slen, pos) {
     return (slen - pos + 1);
 }
 
-func reverse(str, __ARGV_END__, i, result) {
+function reverse(str, __ARGV_END__, i, result) {
     result = "";
     for (i = length(str); i > 0; i -= 1) {
         result = sprintf("%s%s", result, substr(str, i, 1));
@@ -196,7 +196,7 @@ func reverse(str, __ARGV_END__, i, result) {
     return result;
 }
 
-func rstrip(str, chars, __ARGV_END__, char_array, i, s, result) {
+function rstrip(str, chars, __ARGV_END__, char_array, i, s, result) {
     split(chars, char_array, "");
     for (i = length(str); i > 0; i -= 1) {
         s = substr(str, i, 1);
@@ -207,11 +207,11 @@ func rstrip(str, chars, __ARGV_END__, char_array, i, s, result) {
     return substr(str, 1, i);
 }
 
-func concat(a, b) {
+function concat(a, b) {
     return sprintf("%s%s", a, b);
 }
 
-func Split(str, result, sep, maxsplit, __ARGV_END__, start, end, i, match_group, slen) {
+function Split(str, result, sep, maxsplit, __ARGV_END__, start, end, i, match_group, slen) {
     array::new(result);
     if (length(maxsplit) == 0) {
         maxsplit = -1;
@@ -240,7 +240,7 @@ func Split(str, result, sep, maxsplit, __ARGV_END__, start, end, i, match_group,
     array::push(result, str);
 }
 
-func bytes(str, bs_array, __ARGV_END__, save_rs, fmt, cmd, od_line, od_array, i, h) {
+function bytes(str, bs_array, __ARGV_END__, save_rs, fmt, cmd, od_line, od_array, i, h) {
     array::new(bs_array);
     fmt = "%s '%%s' %s | od -An -t x1";
     cmd = sprintf(fmt, shlex::quote(GLOBAL["PRINTF_COMMAND"]), shlex::quote(str));
@@ -260,7 +260,7 @@ func bytes(str, bs_array, __ARGV_END__, save_rs, fmt, cmd, od_line, od_array, i,
     RS = save_rs;
 }
 
-func escape(str, __ARGV_END__, fmt, cmd, result) {
+function escape(str, __ARGV_END__, fmt, cmd, result) {
     fmt = "%s '%%b' %s";
     cmd = sprintf(fmt, shlex::quote(GLOBAL["PRINTF_COMMAND"]), shlex::quote(str));
     save_rs = RS;

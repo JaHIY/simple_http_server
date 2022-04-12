@@ -8,7 +8,7 @@ BEGIN {
     GLOBAL["FIND_COMMAND"] = "find";
 }
 
-func listdir(path, filelist, __ARGV__, save_rs, fmt, cmd, quiet_cmd, result) {
+function listdir(path, filelist, __ARGV__, save_rs, fmt, cmd, quiet_cmd, result) {
     array::new(filelist);
     fmt = "%s %s -maxdepth 1 -print0";
     cmd = sprintf(fmt, shlex::quote(GLOBAL["FIND_COMMAND"]), shlex::quote(path));

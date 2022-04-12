@@ -4,20 +4,20 @@
 @include "./lib/html.awk";
 @include "./lib/http_status.awk";
 
-func serve_forever(port) {
+function serve_forever(port) {
     while (1) {
         run(port);
     }
 }
 
-func run(port, __ARGV_END__, store) {
+function run(port, __ARGV_END__, store) {
     store["http_server"] = sprintf("/inet/tcp/%d/0/0", port);
     init(store);
     handle(store);
     close(store["http_server"]);
 }
 
-func init(store) {
+function init(store) {
     store["HTTPStatus"][0] = "";
     array::new(store["HTTPStatus"]);
     http_status::new(store["HTTPStatus"]);
@@ -43,7 +43,7 @@ func init(store) {
     store["error_content_type"] = "text/html;charset=utf-8";
 }
 
-func parse_request(store, __ARGV_END__,
+function parse_request(store, __ARGV_END__,
                    version, words, base_version_number, version_number,
                    command, path, conntype, expect) {
     store["command"] = "";
@@ -116,7 +116,7 @@ func parse_request(store, __ARGV_END__,
     return 1;
 }
 
-func parse_headers(store, __ARGV_END__,
+function parse_headers(store, __ARGV_END__,
                    save_rs, line, strpos, match_group, key, value) {
     store["headers"][0] = "";
     array::new(store["headers"]);
@@ -146,13 +146,13 @@ func parse_headers(store, __ARGV_END__,
     }
 }
 
-func handle_expect_100(store) {
+function handle_expect_100(store) {
     send_response_only(store, store["HTTPStatus"]["CONTINUE"]);
     end_headers(store);
     return 1;
 }
 
-func handle(store) {
+function handle(store) {
     store["close_connection"] = 1;
 
     handle_one_request(store);
@@ -161,7 +161,7 @@ func handle(store) {
     }
 }
 
-func handle_one_request(store, __ARGV_END__, save_rs, ret, method) {
+function handle_one_request(store, __ARGV_END__, save_rs, ret, method) {
     save_rs = RS;
     RS = "\r\n";
     ret = store["http_server"] |& getline store["requestline"];
@@ -192,11 +192,11 @@ func handle_one_request(store, __ARGV_END__, save_rs, ret, method) {
     }
 }
 
-func mname(command) {
+function mname(command) {
     return sprintf("do_%s", command);
 }
 
-func send_error(store, http_status, message, explain, __ARGV_END__, body) {
+function send_error(store, http_status, message, explain, __ARGV_END__, body) {
     if (length(message) == 0) {
         message = http_status["phrase"];
     }
@@ -223,14 +223,14 @@ func send_error(store, http_status, message, explain, __ARGV_END__, body) {
     }
 }
 
-func send_response(store, http_status, message) {
+function send_response(store, http_status, message) {
     log_request(store, http_status, "-");
     send_response_only(store, http_status, message);
     send_header(store, "Server", version_string(store));
     send_header(store, "Date", date_time_string());
 }
 
-func send_response_only(store, http_status, message) {
+function send_response_only(store, http_status, message) {
     if (store["request_version"] != "HTTP/0.9") {
         if (length(message) == 0) {
             message = http_status["phrase"];
@@ -243,7 +243,7 @@ func send_response_only(store, http_status, message) {
     }
 }
 
-func send_header(store, key, value) {
+function send_header(store, key, value) {
     if (store["request_version"] != "HTTP/0.9") {
         if (!("_headers_buffer" in store)) {
             store["_headers_buffer"][0] = "";
@@ -253,21 +253,21 @@ func send_header(store, key, value) {
     }
 }
 
-func end_headers(store) {
+function end_headers(store) {
     if (store["request_version"] != "HTTP/0.9") {
         array::push(store["_headers_buffer"], "");
         flush_headers(store);
     }
 }
 
-func flush_headers(store) {
+function flush_headers(store) {
     if ("_headers_buffer" in store) {
         printf("%s\r\n", array::join(store["_headers_buffer"], "\r\n")) |& store["http_server"];
         delete store["_headers_buffer"];
     }
 }
 
-func log_request(store, http_status, size, __ARGV_END__, code) {
+function log_request(store, http_status, size, __ARGV_END__, code) {
     code = "-";
     if (http_status::gen_key(http_status["phrase"]) in store["HTTPStatus"]) {
         code = http_status["code"];
@@ -275,25 +275,25 @@ func log_request(store, http_status, size, __ARGV_END__, code) {
     log_message(sprintf("\"%s\" %s %s", store["requestline"], code, size));
 }
 
-func log_error(message) {
+function log_error(message) {
     log_message(message);
 }
 
-func log_message(message) {
+function log_message(message) {
     printf("[%s] %s\n", log_date_time_string(), message) > "/dev/stderr";
 }
 
-func version_string(store) {
+function version_string(store) {
     return sprintf("%s %s", store["server_version"], store["sys_version"]);
 }
 
-func date_time_string(timestamp) {
+function date_time_string(timestamp) {
     if (length(timestamp) == 0) {
         timestamp = awk::systime();
     }
     return awk::strftime("%a, %d %b %Y %H:%M:%S GMT", timestamp, 1);
 }
 
-func log_date_time_string() {
+function log_date_time_string() {
     return awk::strftime("%d/%m/%y %H:%M:%S");
 }

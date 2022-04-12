@@ -6,7 +6,7 @@
 @include "./lib/operator.awk";
 @include "./lib/string.awk";
 
-func unquote(str, __ARGV_END__, bits, res, i, len) {
+function unquote(str, __ARGV_END__, bits, res, i, len) {
     if (!match(str, "%")) {
         return str;
     }
@@ -22,30 +22,30 @@ func unquote(str, __ARGV_END__, bits, res, i, len) {
     return array::join(res, "");
 }
 
-func re_split(str, arr, sep, __ARGV_END__, a, seps) {
+function re_split(str, arr, sep, __ARGV_END__, a, seps) {
     array::new(arr);
 
     split(str, a, sep, seps);
     array::zip_longest(a, seps, arr);
 }
 
-func _unquote(str) {
+function _unquote(str) {
     str = awk::gensub(/%([[:xdigit:]]{2})/, "\\\\x\\1", "g", str);
     return string::escape(str);
 }
 
-func _unsafe_url_bytes_to_remove(arr, __ARGV_END__, chars) {
+function _unsafe_url_bytes_to_remove(arr, __ARGV_END__, chars) {
     # Unsafe bytes to be removed per WHATWG spec
     chars = "\t\r\n";
     split(chars, arr, "");
 }
 
-func _scheme_chars(arr, __ARGV_END__, chars) {
+function _scheme_chars(arr, __ARGV_END__, chars) {
     chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+-.";
     split(chars, arr, "");
 }
 
-func _uses_netloc(arr) {
+function _uses_netloc(arr) {
     array::push(arr, "");
     array::push(arr, "ftp");
     array::push(arr, "http");
@@ -73,12 +73,12 @@ func _uses_netloc(arr) {
     array::push(arr, "wss");
 }
 
-func _always_safe_bytes(arr, __ARGV_END__, chars) {
+function _always_safe_bytes(arr, __ARGV_END__, chars) {
     chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-~";
     split(chars, arr, "");
 }
 
-func urlsplit(url, split_result, scheme, allow_fragments,
+function urlsplit(url, split_result, scheme, allow_fragments,
               __ARGV_END__, unsafe_url_bytes, i, j, has_scheme_char,
               netloc, fragment, query, split_netloc, split_url) {
     array::new(split_result);
@@ -141,7 +141,7 @@ func urlsplit(url, split_result, scheme, allow_fragments,
     array::push(split_result, fragment);
 }
 
-func _splitnetloc(url, result, start,
+function _splitnetloc(url, result, start,
                   __ARGV_END__, delim, delimiters, i, wdelim) {
     array::new(result);
     if (length(start) == 0) {
@@ -164,7 +164,7 @@ func _splitnetloc(url, result, start,
     array::push(result, substr(url, start + delim - 1));
 }
 
-func urlunsplit(components, __ARGV_END__, scheme, netloc, url, query, fragment) {
+function urlunsplit(components, __ARGV_END__, scheme, netloc, url, query, fragment) {
     scheme = components[1];
     netloc = components[2];
     url = components[3];
@@ -195,7 +195,7 @@ func urlunsplit(components, __ARGV_END__, scheme, netloc, url, query, fragment) 
     return url;
 }
 
-func quote(str, safe,
+function quote(str, safe,
            __ARGV_END__, always_safe_array, safe_array, i, char,
            safe_dict, bs_array, byte, result) {
     if (length(safe) == 0) {

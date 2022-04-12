@@ -11,22 +11,22 @@
 @include "./lib/urllib_parse.awk";
 
 BEGIN {
-    if (length(Port) == 0) {
+    if (typeof(Port) == "untyped") {
         Port = "8080";
     }
-    if (length(Dir) == 0) {
+    if (typeof(Dir) == "untyped") {
         Dir = ".";
     }
     serve_forever(Port, Dir);
 }
 
-func serve_forever(port, dir) {
+function serve_forever(port, dir) {
     while (1) {
         run(port, dir);
     }
 }
 
-func run(port, dir, __ARGV_END__, store) {
+function run(port, dir, __ARGV_END__, store) {
     store["http_server"] = sprintf("/inet/tcp/%d/0/0", port);
     store["directory"] = dir;
     http_server::init(store);
@@ -34,19 +34,19 @@ func run(port, dir, __ARGV_END__, store) {
     close(store["http_server"]);
 }
 
-func do_GET(store, __ARGV_END__, content) {
+function do_GET(store, __ARGV_END__, content) {
     content = send_head(store);
     if (content) {
         printf("%s\r\n", content) |& store["http_server"];
     }
 }
 
-func do_HEAD(store) {
+function do_HEAD(store) {
     send_head(store);
 }
 
-func send_head(store,
-               __ARGV_END__, path, parts, new_url, index_files, ii, has_index_file,
+function send_head(store,
+               __ARGV_END__, path, parts, new_url, index_files, i, has_index_file,
                ctype, ret, sdata, content) {
     path = translate_path(store["path"], store["directory"]);
     if (posixpath::isdir(path) == 1) {
@@ -99,7 +99,7 @@ func send_head(store,
     return content;
 }
 
-func list_directory(store, path,
+function list_directory(store, path,
                     __ARGV_END__, ret, list, displaypath, title, r, i, name, fullname,
                     displayname, linkname, text) {
     ret = os::listdir(path, list);
@@ -140,7 +140,7 @@ func list_directory(store, path,
     return text;
 }
 
-func translate_path(path, dir, __ARGV_END__, p, trailing_slash, words, i, word) {
+function translate_path(path, dir, __ARGV_END__, p, trailing_slash, words, i, word) {
     split(path, p, "?");
     path = p[1];
     split(path, p, "#");
@@ -164,6 +164,6 @@ func translate_path(path, dir, __ARGV_END__, p, trailing_slash, words, i, word) 
     return path;
 }
 
-func guess_type(path) {
+function guess_type(path) {
     return "application/octet-stream";
 }

@@ -5,7 +5,7 @@
 @include "./lib/array.awk";
 @include "./lib/string.awk";
 
-func normpath(path,
+function normpath(path,
               __ARGV_END__, sep, empty, dot, dotdot, initial_slashes,
               i, comps, new_comps, comp, nlen) {
     sep = "/";
@@ -53,11 +53,11 @@ func normpath(path,
     return dot;
 }
 
-func _get_sep() {
+function _get_sep() {
     return "/";
 }
 
-func dirname(path, __ARGV_END__, sep, i, head) {
+function dirname(path, __ARGV_END__, sep, i, head) {
     sep = _get_sep();
     i = string::rfind(path, sep);
     head = substr(path, 1, i - 1);
@@ -67,7 +67,7 @@ func dirname(path, __ARGV_END__, sep, i, head) {
     return head;
 }
 
-func join(a, p, __ARGV_END__, sep, path) {
+function join(a, p, __ARGV_END__, sep, path) {
     sep = _get_sep();
     path = a;
     if (string::startswith(p, sep)) {
@@ -80,7 +80,7 @@ func join(a, p, __ARGV_END__, sep, path) {
     return path;
 }
 
-func isdir(path, __ARGV_END__, ret, stat_data) {
+function isdir(path, __ARGV_END__, ret, stat_data) {
     ret = awk::stat(path, stat_data);
     if (ret < 0) {
         #printf("isdir: could not stat '%s`: %s\n", path, ERRNO) > "/dev/stderr";
@@ -89,7 +89,7 @@ func isdir(path, __ARGV_END__, ret, stat_data) {
     return (stat_data["type"] == "directory");
 }
 
-func islink(path, __ARGV_END__, ret, stat_data) {
+function islink(path, __ARGV_END__, ret, stat_data) {
     ret = awk::stat(path, stat_data);
     if (ret < 0) {
         #printf("islink: could not stat '%s`: %s\n", path, ERRNO) > "/dev/stderr";
@@ -98,7 +98,7 @@ func islink(path, __ARGV_END__, ret, stat_data) {
     return (stat_data["type"] == "symlink");
 }
 
-func exists(path, __ARGV_END__, ret) {
+function exists(path, __ARGV_END__, ret) {
     ret = awk::stat(path);
     if (ret < 0) {
         return 0;

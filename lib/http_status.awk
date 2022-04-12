@@ -2,7 +2,7 @@
 
 @include "./lib/array.awk";
 
-func new(http_status) {
+function new(http_status) {
     array::new(http_status);
 
     # informational
@@ -78,13 +78,13 @@ func new(http_status) {
     insert(http_status, 511, "Network Authentication Required", "The client needs to authenticate to gain network access");
 }
 
-func gen_key(s) {
+function gen_key(s) {
     s = toupper(s);
     gsub("[[:space:]]", "_", s);
     return s;
 }
 
-func insert(http_status, code, phrase, description, __ARGV_END__, key) {
+function insert(http_status, code, phrase, description, __ARGV_END__, key) {
     key = gen_key(phrase);
     http_status[key]["code"] = code;
     http_status[key]["phrase"] = phrase;

@@ -2,24 +2,24 @@
 
 @include "./lib/operator.awk";
 
-func push(arr, value) {
+function push(arr, value) {
     arr[length(arr) + 1] = value;
 }
 
-func pop(arr, __ARGV_END__, value, len) {
+function pop(arr, __ARGV_END__, value, len) {
     len = length(arr);
     value = arr[len];
     delete arr[len];
     return value;
 }
 
-func unshift(arr, value, __ARGV_END__, i, new_arr) {
+function unshift(arr, value, __ARGV_END__, new_arr) {
     new_arr[1] = value;
     concat(new_arr, arr);
     copy(new_arr, arr);
 }
 
-func shift(arr, __ARGV_END__, value, i, new_arr) {
+function shift(arr, __ARGV_END__, value, new_arr) {
     value = arr[1];
     delete arr[1];
     array::new(new_arr);
@@ -28,13 +28,13 @@ func shift(arr, __ARGV_END__, value, i, new_arr) {
     return value;
 }
 
-func concat(arr1, arr2, __ARGV_END__, i) {
+function concat(arr1, arr2, __ARGV_END__, i) {
     for (i in arr1) {
         push(arr1, arr2[i]);
     }
 }
 
-func join(arr, sep, start, end, __ARGV_END__, result, i) {
+function join(arr, sep, start, end, __ARGV_END__, result, i) {
     if (length(start) == 0) {
         start = 1;
     }
@@ -60,7 +60,7 @@ func join(arr, sep, start, end, __ARGV_END__, result, i) {
     return result;
 }
 
-func contains(arr, target, __ARGV_END__, i) {
+function contains(arr, target, __ARGV_END__, i) {
     for (i in arr) {
         if (arr[i] == target) {
             return 1;
@@ -69,30 +69,30 @@ func contains(arr, target, __ARGV_END__, i) {
     return 0;
 }
 
-func is_in(array_f, target, __ARGV_END__, arr) {
+function is_in(array_f, target, __ARGV_END__, arr) {
     @array_f(arr);
     return contains(arr, target);
 }
 
-func clear(arr, __ARGV_END__, i) {
+function clear(arr, __ARGV_END__, i) {
     for (i in arr) {
         delete arr[i];
     }
 }
 
-func new(arr) {
+function new(arr) {
     arr[0] = "";
     clear(arr);
 }
 
-func copy(from, to, __ARGV_END__, i) {
+function copy(from, to, __ARGV_END__, i) {
     new(to);
     for (i in from) {
         to[i] = from[i];
     }
 }
 
-func filter(arr, fun, new_arr, __ARGV_END__, in_place, i, len, item) {
+function filter(arr, fun, new_arr, __ARGV_END__, in_place, i, len, item) {
     if (awk::isarray(new_arr)) {
         in_place = 0;
     } else {
@@ -112,7 +112,7 @@ func filter(arr, fun, new_arr, __ARGV_END__, in_place, i, len, item) {
     }
 }
 
-func map(arr, fun, new_arr, __ARGV_END__, in_place, i) {
+function map(arr, fun, new_arr, __ARGV_END__, in_place, i) {
     if (awk::isarray(new_arr)) {
         in_place = 0;
     } else {
@@ -128,7 +128,7 @@ func map(arr, fun, new_arr, __ARGV_END__, in_place, i) {
     }
 }
 
-func union(arr1, arr2, new_arr, __ARGV_END__, dict, i, item, in_place) {
+function union(arr1, arr2, new_arr, __ARGV_END__, dict, i, item, in_place) {
     if (awk::isarray(new_arr)) {
         in_place = 0;
     } else {
@@ -156,13 +156,13 @@ func union(arr1, arr2, new_arr, __ARGV_END__, dict, i, item, in_place) {
     }
 }
 
-func swap(arr, i, j, __ARGV_END__, t) {
+function swap(arr, i, j, __ARGV_END__, t) {
     t = arr[i];
     arr[i] = arr[j];
     arr[j] = t;
 }
 
-func qsort_by(arr, left, right, key, reverse, __ARGV_END__, r, last, i, arr_i, arr_left) {
+function qsort_by(arr, left, right, key, reverse, __ARGV_END__, r, last, i, arr_i, arr_left) {
     if (left >= right) {
         return;
     }
@@ -190,16 +190,16 @@ func qsort_by(arr, left, right, key, reverse, __ARGV_END__, r, last, i, arr_i, a
     qsort_by(arr, last + 1, right, key, reverse);
 }
 
-func sortd_by(arr, key, reverse) {
+function sortd_by(arr, key, reverse) {
     qsort_by(arr, 1, length(arr), key, reverse);
 }
 
-func sort_by(arr, new_arr, key, reverse) {
+function sort_by(arr, new_arr, key, reverse) {
     copy(arr, new_arr);
     qsort_by(new_arr, 1, length(new_arr), key, reverse);
 }
 
-func reduce(arr, fun, init, __ARGV_END__, len, i, start, result) {
+function reduce(arr, fun, init, __ARGV_END__, len, i, start, result) {
     start = 1;
     if (awk::typeof(init) == "untyped") {
         init = arr[start];
@@ -213,26 +213,26 @@ func reduce(arr, fun, init, __ARGV_END__, len, i, start, result) {
     return result;
 }
 
-func sum(arr) {
+function sum(arr) {
     return reduce("operator::add", arr);
 }
 
-func setitem(arr, i, v) {
+function setitem(arr, i, v) {
     arr[i] = v;
     return v;
 }
 
-func getitem(arr, i) {
+function getitem(arr, i) {
     return arr[i];
 }
 
-func delitem(arr, i, __ARGV_END__, v) {
+function delitem(arr, i, __ARGV_END__, v) {
     v = arr[i];
     delete arr[i];
     return v;
 }
 
-func all(arr, fun, __ARGV_END__, i) {
+function all(arr, fun, __ARGV_END__, i) {
     for (i in arr) {
         if (!operator::compose1(fun, arr[i])) {
             return 0;
@@ -241,15 +241,15 @@ func all(arr, fun, __ARGV_END__, i) {
     return 1;
 }
 
-func notall(arr, fun) {
+function notall(arr, fun) {
     return operator::not(all(arr, fun));
 }
 
-func any(arr, fun, __ARGV_END__, i, f) {
+function any(arr, fun, __ARGV_END__, i, f) {
     return operator::not(none(arr, fun));
 }
 
-func none(arr, fun) {
+function none(arr, fun) {
     f[1] = "operator::not";
     if (awk::isarray(fun)) {
         concat(f, fun);
@@ -259,7 +259,7 @@ func none(arr, fun) {
     return all(arr, f);
 }
 
-func zip(arr1, arr2, new_arr, __ARGV_END__, len, i, in_place) {
+function zip(arr1, arr2, new_arr, __ARGV_END__, len, i, in_place) {
     if (awk::isarray(new_arr)) {
         in_place = 0;
     } else {
@@ -279,7 +279,7 @@ func zip(arr1, arr2, new_arr, __ARGV_END__, len, i, in_place) {
     }
 }
 
-func zip_longest(arr1, arr2, new_arr, __ARGV_END__, len1, len2, minlen, i, in_place) {
+function zip_longest(arr1, arr2, new_arr, __ARGV_END__, len1, len2, minlen, i, in_place) {
     if (awk::isarray(new_arr)) {
         in_place = 0;
     } else {
