@@ -6,8 +6,32 @@ func push(arr, value) {
     arr[length(arr) + 1] = value;
 }
 
-func pop(arr) {
-    delete arr[length(arr)];
+func pop(arr, __ARGV_END__, value, len) {
+    len = length(arr);
+    value = arr[len];
+    delete arr[len];
+    return value;
+}
+
+func unshift(arr, value, __ARGV_END__, i, new_arr) {
+    new_arr[1] = value;
+    concat(new_arr, arr);
+    copy(new_arr, arr);
+}
+
+func shift(arr, __ARGV_END__, value, i, new_arr) {
+    value = arr[1];
+    delete arr[1];
+    array::new(new_arr);
+    concat(new_arr, arr);
+    copy(new_arr, arr);
+    return value;
+}
+
+func concat(arr1, arr2, __ARGV_END__, i) {
+    for (i in arr1) {
+        push(arr1, arr2[i]);
+    }
 }
 
 func join(arr, sep, start, end, __ARGV_END__, result, i) {
@@ -138,7 +162,7 @@ func swap(arr, i, j, __ARGV_END__, t) {
     arr[j] = t;
 }
 
-func qsort(arr, left, right, key, reverse, __ARGV_END__, r, last, i, arr_i, arr_left) {
+func qsort_by(arr, left, right, key, reverse, __ARGV_END__, r, last, i, arr_i, arr_left) {
     if (left >= right) {
         return;
     }
@@ -162,15 +186,75 @@ func qsort(arr, left, right, key, reverse, __ARGV_END__, r, last, i, arr_i, arr_
         }
     }
     swap(arr, left, last);
-    qsort(arr, left, last - 1, key, reverse);
-    qsort(arr, last + 1, right, key, reverse);
+    qsort_by(arr, left, last - 1, key, reverse);
+    qsort_by(arr, last + 1, right, key, reverse);
 }
 
-func sortd(arr, key, reverse) {
-    qsort(arr, 1, length(arr), key, reverse);
+func sortd_by(arr, key, reverse) {
+    qsort_by(arr, 1, length(arr), key, reverse);
 }
 
-func sort(arr, new_arr, key, reverse) {
+func sort_by(arr, new_arr, key, reverse) {
     copy(arr, new_arr);
-    qsort(new_arr, 1, length(new_arr), key, reverse);
+    qsort_by(new_arr, 1, length(new_arr), key, reverse);
+}
+
+func reduce(arr, fun, init, __ARGV_END__, len, i, start, result) {
+    start = 1;
+    if (awk::typeof(init) == "untyped") {
+        init = arr[start];
+        start += 1;
+    }
+    len = length(arr);
+    result = init;
+    for (i = start; i <= len; i += 1) {
+        result = operator::compose2(fun, result, arr[i]);
+    }
+    return result;
+}
+
+func sum(arr) {
+    return reduce("operator::add", arr);
+}
+
+func setitem(arr, i, v) {
+    arr[i] = v;
+    return v;
+}
+
+func getitem(arr, i) {
+    return arr[i];
+}
+
+func delitem(arr, i, __ARGV_END__, v) {
+    v = arr[i];
+    delete arr[i];
+    return v;
+}
+
+func all(arr, fun, __ARGV_END__, i) {
+    for (i in arr) {
+        if (!operator::compose1(fun, arr[i])) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+func notall(arr, fun) {
+    return operator::not(all(arr, fun));
+}
+
+func any(arr, fun, __ARGV_END__, i, f) {
+    return operator::not(none(arr, fun));
+}
+
+func none(arr, fun) {
+    f[1] = "operator::not";
+    if (awk::isarray(fun)) {
+        concat(f, fun);
+    } else {
+        push(f, fun);
+    }
+    return all(arr, f);
 }

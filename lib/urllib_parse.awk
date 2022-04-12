@@ -3,7 +3,6 @@
 @load "ordchr";
 
 @include "./lib/array.awk";
-@include "./lib/math.awk";
 @include "./lib/operator.awk";
 @include "./lib/string.awk";
 
@@ -163,7 +162,7 @@ func _splitnetloc(url, result, start,
     for (i in delimiters) {
         wdelim = string::find(url, delimiters[i], start);
         if (wdelim > 0) {
-            delim = math::min(delim, wdelim);
+            delim = operator::min(delim, wdelim);
         }
     }
     array::push(result, substr(url, start, delim - 1));

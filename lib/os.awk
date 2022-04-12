@@ -29,7 +29,7 @@ func listdir(path, filelist, __ARGV__, save_rs, fmt, cmd, quiet_cmd, result) {
         array::push(filelist, result);
     }
     close(cmd);
-    array::sortd(filelist, "tolower");
+    array::sortd_by(filelist, "tolower");
 
     RS = save_rs;
     return 1;

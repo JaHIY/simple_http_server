@@ -149,7 +149,7 @@ func translate_path(path, dir, __ARGV_END__, p, trailing_slash, words, i, word) 
     path = urllib_parse::unquote(path);
     path = posixpath::normpath(path);
     split(path, words, "/");
-    array::filter(words, "operator::is_null");
+    array::filter(words, "operator::truth");
     path = dir;
     for (i in words) {
         word = words[i];
