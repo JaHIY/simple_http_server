@@ -3,6 +3,7 @@
 @load "ordchr";
 
 @include "./lib/array.awk";
+@include "./lib/number.awk";
 @include "./lib/operator.awk";
 @include "./lib/string.awk";
 
@@ -29,9 +30,30 @@ function re_split(str, arr, sep, __ARGV_END__, a, seps) {
     array::zip_longest(a, seps, arr);
 }
 
-function _unquote(str) {
-    str = awk::gensub(/%([[:xdigit:]]{2})/, "\\\\x\\1", "g", str);
-    return string::escape(str);
+function _unquote(str,
+                  __ARGV_END__, non_percent_group, percent_group, hex_array,
+                  len, i, result, j, hlen, ret, decode_result, temp) {
+    split(str, non_percent_group, /(%[[:xdigit:]]{2})+/, percent_group);
+    len = length(percent_group);
+    for (i = 1; i <= len; i += 1) {
+        split(substr(percent_group[i], 2), hex_array, "%");
+        array::map(hex_array, "number::from_hex");
+        array::new(temp);
+        hlen = length(hex_array);
+        for (j = 1; j <= hlen;) {
+            ret = string::utf8_decode_one(hex_array, decode_result, j);
+            if (ret < 0) {
+                array::push(temp, percent_hex(hex_array[j]));
+                j += 1;
+            } else {
+                array::push(temp, decode_result[2]);
+                j += ret;
+            }
+        }
+        percent_group[i] = array::join(temp, "");
+    }
+    array::zip_longest(non_percent_group, percent_group, result);
+    return array::join(result, "");
 }
 
 function _unsafe_url_bytes_to_remove(arr, __ARGV_END__, chars) {
@@ -197,7 +219,7 @@ function urlunsplit(components, __ARGV_END__, scheme, netloc, url, query, fragme
 
 function quote(str, safe,
            __ARGV_END__, always_safe_array, safe_array, i, char,
-           safe_dict, bs_array, byte, result) {
+           safe_dict, cp_array, cp, result, utf8_seq) {
     if (length(safe) == 0) {
         safe = "/";
     }
@@ -208,21 +230,27 @@ function quote(str, safe,
 
     for (i in safe_array) {
         char = safe_array[i];
-        key = sprintf("%x", awk::ord(char));
+        key = string::ord(char);
         safe_dict[key] = char;
     }
 
-    string::bytes(str, bs_array);
-
+    string::code_point(str, cp_array);
     array::new(result);
-    for (i in bs_array) {
-        byte = bs_array[i];
-        if (byte in safe_dict) {
-            char = safe_dict[byte];
+    for (i in cp_array) {
+        cp = cp_array[i];
+        if (cp in safe_dict) {
+            char = safe_dict[cp];
         } else {
-            char = string::concat("%", toupper(byte));
+            string::utf8_encode_one(cp, utf8_seq);
+            array::map(utf8_seq, "urllib_parse::percent_hex");
+            char = array::join(utf8_seq, "");
         }
         array::push(result, char);
     }
+
     return array::join(result, "");
+}
+
+function percent_hex(num) {
+    return sprintf("%%%02X", num);
 }

@@ -22,14 +22,14 @@ function unshift(arr, value, __ARGV_END__, new_arr) {
 function shift(arr, __ARGV_END__, value, new_arr) {
     value = arr[1];
     delete arr[1];
-    array::new(new_arr);
+    new(new_arr);
     concat(new_arr, arr);
     copy(new_arr, arr);
     return value;
 }
 
 function concat(arr1, arr2, __ARGV_END__, i) {
-    for (i in arr1) {
+    for (i in arr2) {
         push(arr1, arr2[i]);
     }
 }
@@ -123,6 +123,25 @@ function map(arr, fun, new_arr, __ARGV_END__, in_place, i) {
     for (i in arr) {
         new_arr[i] = @fun(arr[i]);
     }
+
+    if (in_place) {
+        copy(new_arr, arr);
+    }
+}
+
+function flatMap(arr, fun, new_arr, __ARGV_END__, in_place, i, result) {
+    if (awk::isarray(new_arr)) {
+        in_place = 0;
+    } else {
+        in_place = 1;
+    }
+
+    new(new_arr);
+    for (i in arr) {
+        @fun(arr[i], result);
+        concat(new_arr, result);
+    }
+
     if (in_place) {
         copy(new_arr, arr);
     }
@@ -148,7 +167,7 @@ function union(arr1, arr2, new_arr, __ARGV_END__, dict, i, item, in_place) {
     }
 
     for (i in dict) {
-        array::push(new_arr, i);
+        push(new_arr, i);
     }
 
     if (in_place) {

@@ -5,13 +5,15 @@
 @include "./lib/string.awk";
 
 BEGIN {
-    GLOBAL["FIND_COMMAND"] = "find";
+    GLOBAL["OS"][0] = "";
+    array::new(GLOBAL["OS"]);
+    GLOBAL["OS"]["FIND_COMMAND"] = "find";
 }
 
 function listdir(path, filelist, __ARGV__, save_rs, fmt, cmd, quiet_cmd, result) {
     array::new(filelist);
     fmt = "%s %s -maxdepth 1 -print0";
-    cmd = sprintf(fmt, shlex::quote(GLOBAL["FIND_COMMAND"]), shlex::quote(path));
+    cmd = sprintf(fmt, shlex::quote(GLOBAL["OS"]["FIND_COMMAND"]), shlex::quote(path));
     quiet_cmd = string::concat(cmd, " > /dev/null 2> /dev/null");
 
     if (system(quiet_cmd)) {
